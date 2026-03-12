@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tech Gadget Hub - Latest News</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(135deg,#0f0f1a,#1a1a2e,#16213e);
+min-height:100vh;
+}
+
+/* NAVBAR */
+
+.navbar{
+background:#020617;
+padding:15px;
+text-align:center;
+}
+
+.navbar a{
+color:white;
+text-decoration:none;
+margin:0 20px;
+font-weight:bold;
+font-size:16px;
+}
+
+.navbar a:hover{
+color:#00d4ff;
+}
+
+.navbar .active{
+color:#00d4ff;
+}
+
+/* CONTAINER */
+
+.container{
+max-width:1300px;
+margin:auto;
+padding:40px 20px;
+}
+
+/* HEADER */
+
+.header{
+text-align:center;
+margin-bottom:40px;
+}
+
+.logo{
+font-size:3rem;
+}
+
+h1{
+color:white;
+font-size:2.5rem;
+background:linear-gradient(90deg,#00d4ff,#ff6b6b);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+color:#888;
+margin-top:10px;
+}
+
+/* TABS */
+
+.tabs{
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+gap:10px;
+margin:40px 0;
+}
+
+.tab-btn{
+padding:10px 20px;
+border:2px solid #333;
+background:transparent;
+color:#888;
+border-radius:25px;
+cursor:pointer;
+}
+
+.tab-btn.active{
+background:#00d4ff;
+color:#000;
+border-color:#00d4ff;
+}
+
+/* NEWS GRID */
+
+.news-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+gap:25px;
+}
+
+/* CARD */
+
+.news-card{
+background:#1e1e2e;
+border-radius:12px;
+overflow:hidden;
+border:1px solid #2a2a3a;
+}
+
+.news-card img{
+width:100%;
+height:200px;
+object-fit:cover;
+}
+
+.news-card-content{
+padding:20px;
+}
+
+.news-card h3{
+color:white;
+font-size:18px;
+margin-bottom:10px;
+}
+
+.news-card a{
+color:#00d4ff;
+text-decoration:none;
+}
+
+.news-card-meta{
+color:#aaa;
+font-size:13px;
+margin-bottom:10px;
+}
+
+.news-card-stats{
+display:flex;
+justify-content:space-between;
+margin-top:10px;
+}
+
+/* BUTTON */
+
+.refresh-container{
+text-align:center;
+margin-top:40px;
+}
+
+.refresh-btn{
+padding:12px 35px;
+background:#00d4ff;
+border:none;
+border-radius:30px;
+font-weight:bold;
+cursor:pointer;
+}
+
+/* FOOTER */
+
+.footer{
+text-align:center;
+margin-top:60px;
+padding-top:30px;
+border-top:1px solid #333;
+color:#777;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+
+<nav class="navbar">
+<a href="index.html">Home</a>
+<a href="products.html">Products</a>
+<a href="info.html" class="active">Gadget News</a>
+<a href="contact.html">Contact</a>
+<a href="feedback.html">feedback</a>
+</nav>
+
+<div class="container">
+
+<header class="header">
+<div class="logo">🔌</div>
+<h1>Tech Gadget Hub</h1>
+<p class="subtitle">Latest Technology News</p>
+</header>
+
+<!-- SUBREDDIT TABS -->
+
+<div class="tabs">
+<button class="tab-btn active" data-subreddit="technology">technology</button>
+<button class="tab-btn" data-subreddit="gadgets">gadgets</button>
+<button class="tab-btn" data-subreddit="tech">tech</button>
+<button class="tab-btn" data-subreddit="hardware">hardware</button>
+<button class="tab-btn" data-subreddit="apple">apple</button>
+<button class="tab-btn" data-subreddit="android">android</button>
+</div>
+
+<!-- NEWS GRID -->
+
+<div id="news-grid" class="news-grid"></div>
+
+<div class="refresh-container">
+<button class="refresh-btn" onclick="refreshNews()">Refresh News</button>
+</div>
+
+<footer class="footer">
+Data from Reddit • Tech Gadget Hub
+</footer>
+
+</div>
+
+<script>
+
+let currentSubreddit="technology";
+
+function getRedditUrl(sub){
+return `https://www.reddit.com/r/${sub}/hot.json?limit=12`;
+}
+
+async function fetchRedditNews(sub=currentSubreddit){
+
+const grid=document.getElementById("news-grid");
+
+grid.innerHTML="Loading news...";
+
+try{
+
+const res=await fetch(getRedditUrl(sub));
+const data=await res.json();
+
+grid.innerHTML="";
+
+data.data.children.forEach(post=>{
+
+const p=post.data;
+
+const card=document.createElement("div");
+card.className="news-card";
+
+const img=p.thumbnail && p.thumbnail.startsWith("http") 
+? `<img src="${p.thumbnail}">`
+: "";
+
+card.innerHTML=`
+${img}
+<div class="news-card-content">
+<h3><a href="${p.url}" target="_blank">${p.title}</a></h3>
+<div class="news-card-meta">u/${p.author}</div>
+<div class="news-card-stats">
+<span>⬆ ${p.score}</span>
+<span>💬 ${p.num_comments}</span>
+</div>
+</div>
+`;
+
+grid.appendChild(card);
+
+});
+
+}catch(e){
+
+grid.innerHTML="Error loading news.";
+
+}
+
+}
+
+function refreshNews(){
+fetchRedditNews(currentSubreddit);
+}
+
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+
+btn.onclick=function(){
+
+document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+
+this.classList.add("active");
+
+currentSubreddit=this.dataset.subreddit;
+
+fetchRedditNews(currentSubreddit);
+
+}
+
+});
+
+fetchRedditNews();
+
+setInterval(refreshNews,300000);
+
+</script>
+
+</body>
+</html>

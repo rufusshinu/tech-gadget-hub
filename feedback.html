@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Share your feedback about our website and products">
+<title>Feedback</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.star-rating{
+display:flex;
+flex-direction:row-reverse;
+justify-content:flex-end;
+gap:0.25rem;
+}
+
+.star-rating input{
+position:absolute;
+opacity:0;
+width:0;
+height:0;
+}
+
+.star-rating label{
+cursor:pointer;
+font-size:1.75rem;
+color:#ccc;
+transition:color 0.2s ease, transform 0.2s ease;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label{
+color:#f1c40f;
+}
+
+.star-rating label:hover{
+transform:scale(1.15);
+}
+
+.form-group{
+margin-bottom:1.25rem;
+}
+
+.rating-fieldset{
+border:none;
+padding:0;
+margin:0 0 1.25rem 0;
+}
+
+.success-message{
+display:none;
+background-color:#d4edda;
+color:#155724;
+padding:1rem;
+border-radius:6px;
+margin-top:1rem;
+text-align:center;
+}
+
+.success-message.show{
+display:block;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+<nav class="navbar">
+<a href="index.html">Home</a>
+<a href="products.html">Products</a>
+<a href="info.html">Gadget News</a>
+<a href="contact.html">Contact</a>
+<a href="feedback.html" class="active">Feedback</a>
+</nav>
+</header>
+
+<main>
+
+<div class="feedback-container">
+
+<h1>Give Your Feedback</h1>
+<p>We would love to hear your thoughts about our website.</p>
+
+<form id="feedbackForm">
+
+<div class="form-group">
+<label for="userName">Your Name</label>
+<input
+type="text"
+id="userName"
+name="name"
+placeholder="Enter your name"
+required
+>
+</div>
+
+<div class="form-group">
+<label for="userEmail">Email</label>
+<input
+type="email"
+id="userEmail"
+name="email"
+placeholder="Enter your email"
+required
+>
+</div>
+
+<fieldset class="rating-fieldset">
+<legend>Rate Us</legend>
+
+<div class="rating star-rating">
+
+<input type="radio" id="star5" name="rating" value="5" required>
+<label for="star5">★</label>
+
+<input type="radio" id="star4" name="rating" value="4">
+<label for="star4">★</label>
+
+<input type="radio" id="star3" name="rating" value="3">
+<label for="star3">★</label>
+
+<input type="radio" id="star2" name="rating" value="2">
+<label for="star2">★</label>
+
+<input type="radio" id="star1" name="rating" value="1">
+<label for="star1">★</label>
+
+</div>
+
+</fieldset>
+
+<div class="form-group">
+<label for="userFeedback">Your Feedback</label>
+<textarea
+id="userFeedback"
+name="feedback"
+placeholder="Write your feedback here..."
+rows="5"
+required
+></textarea>
+</div>
+
+<button type="submit">Submit Feedback</button>
+
+<div class="success-message">
+✓ Thank you! Your feedback has been submitted successfully.
+</div>
+
+</form>
+
+</div>
+
+</main>
+
+<footer>
+<p>&copy; 2026 Your Company. All rights reserved.</p>
+</footer>
+
+<script>
+
+const scriptURL = "https://script.google.com/macros/s/AKfycbx1pTMRSGljtF1pC0B8ptTOfUkxVWaXOUQlCgY6aDd9GugmJ45E5H9KreM4Y-WVh0N4/exec";
+
+const form = document.getElementById("feedbackForm");
+const successMessage = document.querySelector(".success-message");
+
+form.addEventListener("submit", e => {
+
+e.preventDefault();
+
+const formData = new FormData(form);
+
+fetch(scriptURL,{
+method:"POST",
+body:JSON.stringify(Object.fromEntries(formData))
+})
+.then(response => {
+
+successMessage.classList.add("show");
+
+setTimeout(()=>{
+form.reset();
+successMessage.classList.remove("show");
+},4000);
+
+})
+.catch(error=>alert("Error submitting feedback"));
+
+});
+
+</script>
+
+</body>
+</html>
